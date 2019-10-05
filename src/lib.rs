@@ -2,6 +2,19 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::io::BufRead;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CountOption {
+    Char,
+    Word,
+    Line,
+}
+
+impl Default for CountOption {
+    fn default() -> Self {
+        CountOption::Word
+    }
+}
+
 // ライブラリ外から参照するためpubにする
 pub fn count(input: impl BufRead) -> HashMap<String, usize> {
     let re = Regex::new(r"\w+").unwrap();
