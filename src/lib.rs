@@ -16,17 +16,27 @@ impl Default for CountOption {
 }
 
 // ライブラリ外から参照するためpubにする
-pub fn count(input: impl BufRead) -> HashMap<String, usize> {
+pub fn count(input: impl BufRead, option: CountOption) -> HashMap<String, usize> {
     let re = Regex::new(r"\w+").unwrap();
     let mut freqs = HashMap::new();
 
     for line in input.lines() {
         let line = line.unwrap();
-        // 4. その行を単語で分割する
-        for m in re.find_iter(&line) {
-            let word = m.as_str().to_string();
-            // 5. 出現した単語の出現頻度を数える
-            *freqs.entry(word).or_insert(0) += 1;
+        use crate::CountOption::*;
+        match option {
+            Char => {
+                for c in line.chars() {
+                    *freqs.entry(c.to_string()).or_insert(0) += 1;
+                }
+            }
+            Word => {
+                for m in re.find_iter(&line) {
+                    let word = m.as_str().to_string();
+                    // 5. 出現した単語の出現頻度を数える
+                    *freqs.entry(word).or_insert(0) += 1;
+                }
+            }
+            Line => *freqs.entry(line.to_string()).or_insert(0) += 1,
         }
     }
     freqs
